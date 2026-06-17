@@ -46,7 +46,7 @@ def process_arguments(argv: list[str]) -> list[int]:
         try:
             int_arr.append(int(arg))
         except ValueError:
-            print(f"invalid parameter: {arg}")
+            print(f"invalid parameter: '{arg}'")
             err = 1
     if err == 1:
         raise No_scores
