@@ -1,37 +1,33 @@
-#! /usr/bin/python3
-
 class Plant:
+    _name: str
+    _height: float
+    _age: int
 
-    """ Plant class that serves as a blueprint for any plan """
-    def __init__(self, name: str, height: int, age: int):
-        """
-        The constructor that initializes instances
-        with attributes for name, height, and age.
-        """
-        self.name = name
-        self.height = height
-        self.age = age
+    def __init__(self, name: str, height: float, age: int) -> None:
+        self._name = name.capitalize()
+        self._height = height
+        self._age = age
 
-    def grow(self):
-        """ increase the size of the plant """
-        self.height += 1
+    def show(self) -> None:
+        print(
+            f"{self._name}: {round(self._height, 2)}cm, {self._age} days old"
+        )
 
-    def age(self):
-        """ increase the age of the plant """
-        self.age += 1
+    def grow(self, grow: float) -> None:
+        self._height += grow
 
-    def get_info(self, day: int):
-        """ display informations about the current plant status """
-        print(f"=== Day {day} ===")
-        print(f"{self.name}: {self.height}cm, {self.age} days old")
+    def age(self, age: int) -> None:
+        self._age += age
 
 
 if __name__ == "__main__":
-    p1 = Plant("rose", 25, 30)
-    i = 1
-    p1.get_info(1)
-    while (i < 7):
-        p1.grow()
-        p1.age()
-        i += 1
-    p1.get_info(i)
+    plan = Plant("Rose", 25, 30)
+    initial_heigth = plan._height
+    print("=== Garden Plant Growth ===")
+    plan.show()
+    for i in range(1, 8):
+        print(f"=== Day {i} ===")
+        plan.age(1)
+        plan.grow(0.8)
+        plan.show()
+    print(f"Growth this week: {round(plan._height - initial_heigth, 2)}cm")

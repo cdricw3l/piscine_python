@@ -3,7 +3,7 @@ import sys
 
 class No_scores(Exception):
     msg: str = "No scores provided.\
-Usage: python3 ft_score_analytics.py <score1> <score2> ..."
+ Usage: python3 ft_score_analytics.py <score1> <score2> ..."
 
     def __init__(self, msg: str = msg) -> None:
         Exception.__init__(self, msg)
@@ -49,7 +49,7 @@ def process_arguments(argv: list[str]) -> list[int]:
             print(f"invalid parameter: '{arg}'")
             err = 1
     if err == 1:
-        raise ValueError("No scores provided. Usage: python3 ft_score_analytics.py <score1> <score2> ...")
+        raise No_scores
     return int_arr
 
 
@@ -60,5 +60,5 @@ if __name__ == "__main__":
         score_list: list[int] = process_arguments(args)
         data_score: Scores = Scores(score_list)
         print(data_score)
-    except (No_scores) as e:
+    except No_scores as e:
         print(f"{e}\n")

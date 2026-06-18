@@ -1,30 +1,32 @@
-#! /usr/bin/python3
-
 class Plant:
+    _name: str
+    _height: float
+    _age: int
 
-    counter = 0
-    """ 
-    Plant class that serves as a blueprint for any plant
-    and track the number of plan created
-    """
-    def __init__(self, name: str, height: int, age: int):
-        """
-        The constructor that initializes instances
-        with attributes for name, height, and age,
-        and display a creation message
-        """
-        self.name = name
-        self.height = height
-        self.age = age
-        Plant.counter += 1
-        print(f"Created: {name} ({height}cm, {age} days)")
+    def __init__(self: "Plant", name: str, height: float, age: int) -> None:
+        self._name = name.capitalize()
+        self._height = height
+        self._age = age
+
+    def show(self) -> None:
+        print(
+            f"{self._name}: {round(self._height, 1)}cm, {self._age} days old"
+        )
+
+    def grow(self, grow: float) -> None:
+        self._height += grow
+
+    def age(self, age: int) -> None:
+        self._age += age
+
 
 if __name__ == "__main__":
+    list_plants: list[Plant] = [
+        Plant("rose", 25.0, 30), Plant("Oak", 200.0, 365),
+        Plant("Cactus", 5.0, 365), Plant("Sunflower", 80.0, 45),
+        Plant("Fern", 15.0, 120)
+    ]
     print("=== Plant Factory Output ===")
-    p1 = Plant("rose", 0, 1)
-    p2 = Plant("tullipe", 0, 1)
-    p3 = Plant("begonia", 0, 1)
-    p4 = Plant("maculata", 0, 1)
-    p5 = Plant("margueritte", 0, 1)
-    print(f"\nTotal plants created: {Plant.counter}")
-    
+    for plant in list_plants:
+        print("Created:", end=" ")
+        plant.show()
