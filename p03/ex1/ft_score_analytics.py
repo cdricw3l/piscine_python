@@ -49,7 +49,7 @@ def process_arguments(argv: list[str]) -> list[int]:
             print(f"invalid parameter: '{arg}'")
             err = 1
     if err == 1:
-        raise No_scores
+        raise ValueError("No scores provided. Usage: python3 ft_score_analytics.py <score1> <score2> ...")
     return int_arr
 
 
