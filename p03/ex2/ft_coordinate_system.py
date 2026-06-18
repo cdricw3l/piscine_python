@@ -1,10 +1,11 @@
 import math
 
-class invalid_syntax(Exception):
+class Invalid_syntax(Exception):
+    _data: tuple[int]
     def __init__(self, msg: str = "Invalid syntax") -> None:
         Exception.__init__(self, msg)
-    def __str__(self):
-        return Exception.__dict__
+        self._data: tuple[float] = (0,0,0)
+
 class Distance_data():
     x: tuple[float]
     y: tuple[float]
@@ -32,17 +33,15 @@ def get_player_pos() -> tuple[int]:
         " in format 'x,y,z': "
     )
     if ',' not in user_input:
-        print(invalid_syntax)
+        raise Invalid_syntax
     for arg in user_input.split(","):
         try:
             arg_list.append(float(arg))
-        except ValueError:
-            raise ValueError(
-                f"Error on parameter '{arg}':"
-                f"could not convert string to float: '{arg}'"
-            )
+        except ValueError as e:
+            print(f"Error on parameter '{arg}': {e}")
+            return (0,0,0)
     if len(arg_list) > 3:
-        raise invalid_syntax
+        raise Invalid_syntax
     return tuple(arg_list)
 
 
