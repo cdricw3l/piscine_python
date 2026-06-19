@@ -1,0 +1,3 @@
+ex3
+etudier les types set!, list dict
+By the way, how does Python print an empty set, and why?

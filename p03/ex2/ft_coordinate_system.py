@@ -61,7 +61,7 @@ def get_player_pos() -> tuple[float, ...]:
             raise Invalid_syntax
         return tuple(arg_list)
 
-
+#input getter whith label printing
 def get_set(label: str) -> tuple[float, ...]:
     print(f"Get a {label} set of coordinates")
     # infinit loop utils good set
