@@ -27,25 +27,19 @@ def parsing_arg(args: list[str]) -> dict[str, int]:
         try:
             split: list[str] = arg.split(':')
             kv: dict[str, int] = get_key_value(split)
-            print(kv)
-            inventory.update(kv)
+            if split[0] not in inventory:
+                inventory.update(kv)
+            else:
+                print(f"Redundant item '{split[0]}'- discarding")
         except Invalide_param as e:
             print(e)
         except ValueError as e:
             print(e)
     return inventory
 
-def remove_dupplicate(args: list[str]) -> list[str]:
-    unique_args: list[str] = []
-    
-# if __name__ == "__main__":
-#     args: list[str] = sys.argv[1:]
-#     unique_args: list[str] = []
-#     [unique_args.append(arg) for arg in args if arg not in unique_args]
-#     print(unique_args)
-#     # d: dict[str, int] = parsing_arg(args)
+
 
 if __name__ == "__main__":
-    l: list[str] = ["sword:1", "potion:5", "shield:2", "armor:3", "helmet:1", "sword:1", "hello", "key:value"]
-    s: set[str] = set(l)
-    print(s)
+    args: list[str] = sys.argv[1:]
+    d: dict[str, int] = parsing_arg(args)
+    print(f"Got inventory: {d}")
