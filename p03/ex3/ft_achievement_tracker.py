@@ -47,7 +47,7 @@ class Achivement:
             new_player: Player = Player(player, achivements)
             self.__players.append(new_player)
 
-    def display_players_achivement(self) -> None:
+    def display_players_achivements(self) -> None:
         for player in self.__players:
             print(
                 f"Player: {player.get_name()}: {player.get_achivements()}"
@@ -112,7 +112,7 @@ if __name__ == "__main__":
         nba: int = gen_ramdom_set_size(achivement_list)
         achivement: Achivement = Achivement(player_list, achivement_list, nba)
         print("=== Achievement Tracker System ===\n")
-        achivement.display_players_achivement()
+        achivement.display_players_achivements()
         print()
         achivement.display_all_achivements()
         print()

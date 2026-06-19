@@ -6,40 +6,46 @@ class Invalide_param(Exception):
         Exception.__init__(self, msg)
 
 class Quantity_error(ValueError):
-    def __init__(self, msg: str) -> None:
-        ValueError.__init__(self, msg)
+    def __init__(self) -> None:
+        ValueError.__init__(self)
 
-def get_key_value(arg:str) -> dict[str, int]:
-    # try:
-    #     kv: dict[str, int] = {}
-    #     split: list[str] = arg.split(':')
-    #     key: str = split[0]
-    #     value: str = split[1]
-    #     kv.update({key:value})
-    # except (IndexError, ValueError) as e:
-    #     if e.__class__.__name__ == IndexError.__name__:
-    #         raise  Invalide_param(f"Error - invalid parameter '{}'")
-    #     elif e.__class__.__name__ == ValueError.__name__:
-    #         raise ValueError
-def parsing_arg(args: list[str]) -> dict[str, int]:
-    inventory: dict[str, int] = {}
-    for arg in args:
-        split: list[str] = arg.split()
-        
-        key: str = split[0]
-        value: str = split[1]
-
-
-def test():
+def get_key_value(split: list[str]) -> dict[str, int]:
+    kv: dict[str, int] = {}
     try:
-        int("abc")
-    except ValueError:
-        raise Quantity_error(f"Quantity error for 'abc'")
+        key: str = split[0]
+        value: str = int(split[1])
+        kv.update({key:value})
+    except IndexError:
+        raise  Invalide_param(f"Error - invalid parameter '{key}'")
+    except ValueError as e:
+        raise ValueError(f"Quantity error for '{key}': {e}")
+    return kv
+
+def parsing_arg(args: list[str]) -> dict[str, int]:
+    inventory: dict = {}
+    for arg in args:
+        try:
+            split: list[str] = arg.split(':')
+            kv: dict[str, int] = get_key_value(split)
+            print(kv)
+            inventory.update(kv)
+        except Invalide_param as e:
+            print(e)
+        except ValueError as e:
+            print(e)
+    return inventory
+
+def remove_dupplicate(args: list[str]) -> list[str]:
+    unique_args: list[str] = []
+    
+# if __name__ == "__main__":
+#     args: list[str] = sys.argv[1:]
+#     unique_args: list[str] = []
+#     [unique_args.append(arg) for arg in args if arg not in unique_args]
+#     print(unique_args)
+#     # d: dict[str, int] = parsing_arg(args)
 
 if __name__ == "__main__":
-#    args: list[str] = sys.argv[1:]
-#    parsing_arg(args)
-    try:
-        test()
-    except Quantity_error as e:
-        print(e)
+    l: list[str] = ["sword:1", "potion:5", "shield:2", "armor:3", "helmet:1", "sword:1", "hello", "key:value"]
+    s: set[str] = set(l)
+    print(s)

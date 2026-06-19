@@ -22,7 +22,7 @@ ex2:
 ex3:
 	@$(INTERPRETER) ex3/$(EX3) $(ARG)
 ex4:
-	@$(INTERPRETER) ex4/$(EX4) $(ARG)
+	@$(INTERPRETER) ex4/$(EX4)  sword:1 potion:5 shield:2 armor:3 helmet:1 sword:1 hello key:value
 ex5:
 	@$(INTERPRETER) ex5/$(EX5) $(ARG)
 ex6:
