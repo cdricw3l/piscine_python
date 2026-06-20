@@ -101,6 +101,7 @@ def gen_ramdom_set_size(achivement_list: list[str]) -> int:
 
 
 if __name__ == "__main__":
+    player_list: list[str] = ["cedric", "michel", "loic", "jaque"]
     achivement_list: list[str] = [
         'Crafting Genius', 'Strategist', 'World Savior',
         'Speed Runner', 'Survivor', 'Master Explorer',
@@ -108,38 +109,17 @@ if __name__ == "__main__":
         'Collector Supreme', 'Untouchable', 'Sharp Mind', 'Boss Slayer']
 
     try:
-        print("=== Achievement Tracker System ===\n")
         nba: int = gen_ramdom_set_size(achivement_list)
-        p1_name: str = "Cedric"
-        p1_set: set[str] = gen_player_achievements(achivement_list, nba)
-        print(f"Player {p1_name}: {p1_set}")
-        p2_name: str = "Michel"
-        p2_set: set[str] = gen_player_achievements(achivement_list, nba)
-        print(f"Player {p2_name}: {p2_set}")
-        p3_name: str = "Jean"
-        p3_set: set[str] = gen_player_achievements(achivement_list, nba)
-        print(f"Player {p3_name}: {p3_set}")
-        p4_name: str = "Loic"
-        p4_set: set[str] = gen_player_achievements(achivement_list, nba)
-        print(f"Player {p4_name}: {p4_set}")
-        p5_name: str = "Jacque"
-        p5_set: set[str] = gen_player_achievements(achivement_list, nba)
-        print(f"Player {p5_name}: {p5_set}")
+        achivement: Achivement = Achivement(player_list, achivement_list, nba)
+        print("=== Achievement Tracker System ===\n")
+        achivement.display_players_achivements()
         print()
-        print(f"All distinct achievements: {set(achivement_list)}\n")
-        print(f"Common achievements: {set.intersection(p1_set, p2_set, p3_set, p4_set,p5_set)}")
+        achivement.display_all_achivements()
         print()
-        print(f"Only {p1_name} has: {set(p1_set).difference(p2_set, p3_set,p4_set, p5_set)}")
-        print(f"Only {p2_name} has: {set(p2_set).difference(p1_set, p3_set,p4_set, p5_set)}")
-        print(f"Only {p3_name} has: {set(p3_set).difference(p1_set, p2_set,p4_set, p5_set)}")
-        print(f"Only {p4_name} has: {set(p4_set).difference(p1_set, p2_set,p3_set, p5_set)}")
-        print(f"Only {p5_name} has: {set(p5_set).difference(p1_set, p2_set,p3_set, p4_set)}")
+        achivement.commun_achivements()
         print()
-        print(f"{p1_name} is missing: {set(achivement_list).difference(p1_set)}")
-        print(f"{p2_name} is missing: {set(achivement_list).difference(p2_set)}")
-        print(f"{p3_name} is missing: {set(achivement_list).difference(p3_set)}")
-        print(f"{p4_name} is missing: {set(achivement_list).difference(p4_set)}")
-        print(f"{p5_name} is missing: {set(achivement_list).difference(p5_set)}")
+        achivement.only_has_achivements()
+        print()
+        achivement.missing_achivement()
     except (Random_generation_error, Player_generation_error) as e:
         print(e)
-    
