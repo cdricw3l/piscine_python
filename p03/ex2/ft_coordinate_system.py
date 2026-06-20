@@ -61,8 +61,6 @@ def get_player_pos() -> tuple[float, ...]:
             except ValueError as e:
                 raise ValueError(f"Error on parameter '{value}': {e}")
         arg_set: tuple[float, ...] = (float(split_input[0]), float(split_input[1]), float(split_input[2]))
-        if len(arg_set) > 3:
-            raise Invalid_syntax
         return arg_set
 
 #input getter whith label printing
