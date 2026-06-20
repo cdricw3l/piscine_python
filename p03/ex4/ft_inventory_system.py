@@ -40,6 +40,7 @@ def parsing_arg(args: list[str]) -> dict[str, int]:
 
 
 if __name__ == "__main__":
+    print("=== Inventory System Analysis ===")
     args: list[str] = sys.argv[1:]
     try:
         items: dict[str, int] = parsing_arg(args)
