@@ -1,6 +1,10 @@
 import math
 
 
+# value in set can be modified so set doesnt accept list an dictionnary
+# but set tiself can be modified. we can add or delete value in set.
+# every element in set can be modified
+
 class Invalid_syntax(Exception):
     def __init__(self, msg: str = "Invalid syntax") -> None:
         Exception.__init__(self, msg)
@@ -34,8 +38,6 @@ class Set_data():
 def distance_between_two_set(set_1: Set_data, set_2: Set_data) -> None:
     s1: tuple[float, ...] = set_1.get_set()
     s2: tuple[float, ...] = set_2.get_set()
-    print(s1)
-    print(s2)
     distance: float = math.sqrt((s2[0] - s1[0])**2
                                 + (s2[1] - s1[1])**2
                                 + (s2[2] - s1[2])**2)
@@ -43,23 +45,25 @@ def distance_between_two_set(set_1: Set_data, set_2: Set_data) -> None:
 
 
 def get_player_pos() -> tuple[float, ...]:
-    arg_list: list[float] = []
+    arg_set: tuple[float, ...] = ()
 
     while (1):
         user_input: str = input(
             "Enter new coordinates as floats"
             " in format 'x,y,z': "
         )
-        if ',' not in user_input:
+        if user_input.count(",") != 2:
             raise Invalid_syntax
-        for arg in user_input.split(","):
+        split_input: list[str] =  user_input.split(",")
+        for value in split_input:
             try:
-                arg_list.append(float(arg))
+                float(value)
             except ValueError as e:
-                raise ValueError(f"Error on parameter '{arg}': {e}")
-        if len(arg_list) > 3:
+                raise ValueError(f"Error on parameter '{value}': {e}")
+        arg_set: tuple[float, ...] = (float(split_input[0]), float(split_input[1]), float(split_input[2]))
+        if len(arg_set) > 3:
             raise Invalid_syntax
-        return tuple(arg_list)
+        return arg_set
 
 #input getter whith label printing
 def get_set(label: str) -> tuple[float, ...]:
