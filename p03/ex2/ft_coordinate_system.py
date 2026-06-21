@@ -45,7 +45,6 @@ def distance_between_two_set(set_1: Set_data, set_2: Set_data) -> None:
 
 
 def get_player_pos() -> tuple[float, ...]:
-    arg_set: tuple[float, ...] = ()
 
     while (1):
         user_input: str = input(
@@ -54,16 +53,20 @@ def get_player_pos() -> tuple[float, ...]:
         )
         if user_input.count(",") != 2:
             raise Invalid_syntax
-        split_input: list[str] =  user_input.split(",")
+        split_input: list[str] = user_input.split(",")
         for value in split_input:
             try:
                 float(value)
             except ValueError as e:
                 raise ValueError(f"Error on parameter '{value}': {e}")
-        arg_set: tuple[float, ...] = (float(split_input[0]), float(split_input[1]), float(split_input[2]))
+        arg_set: tuple[float, ...] = (
+            float(split_input[0]),
+            float(split_input[1]),
+            float(split_input[2]))
         return arg_set
 
-#input getter whith label printing
+
+# input getter whith label printing
 def get_set(label: str) -> tuple[float, ...]:
     print(f"Get a {label} set of coordinates")
     # infinit loop utils good set
@@ -76,6 +79,7 @@ def get_set(label: str) -> tuple[float, ...]:
 
 
 if __name__ == "__main__":
+    print("=== Game Coordinate System ===\n")
     set_1: tuple[float, ...] = get_set("first")
     data_set_1: Set_data = Set_data(set_1)
     data_set_1.display_set_data()

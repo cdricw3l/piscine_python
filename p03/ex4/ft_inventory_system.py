@@ -52,8 +52,10 @@ if __name__ == "__main__":
         smalest: dict[str, int] = {}
         for item in items:
             value: int = items.get(item, 0)
+            # initialisatio of biggest dict data with the first key value
             if len(biggest) == 0:
                 biggest.update({item: value})
+            # initialisatio of smallest dict data with th first key value
             if len(smalest) == 0:
                 smalest.update({item: value})
             if value > list(biggest.values())[0]:
@@ -67,7 +69,7 @@ if __name__ == "__main__":
         print(
             f"Item most abundant: {list(biggest.keys())[0]} "
             f"with quantity"
-            f"{biggest.get(list(biggest.keys())[0])}")
+            f" {biggest.get(list(biggest.keys())[0])}")
         print(f"Item least abundant: "
               f"{list(smalest.keys())[0]} "
               f"with quantity {smalest.get(list(smalest.keys())[0])}")

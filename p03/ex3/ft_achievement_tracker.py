@@ -8,85 +8,6 @@ class Random_generation_error(ValueError):
         Exception.__init__(self, msg)
 
 
-class Player_generation_error(ValueError):
-    msg: str = "Players list is empty: add players!"
-
-    def __init__(self, msg: str = msg):
-        Exception.__init__(self, msg)
-
-
-class Player:
-    __achivements: set[str]
-    __name: str
-
-    def __init__(self, name: str, achivements: set[str]) -> None:
-        self.__name = name.capitalize()
-        self.__achivements = achivements
-
-    def get_name(self) -> str:
-        return self.__name
-
-    def get_achivements(self) -> set[str]:
-        return self.__achivements
-
-
-class Achivement:
-    __players: list[Player]
-    __all_achivements: set[str]
-
-    def __init__(self, player_list: list[str],
-                 achivement_list: list[str],
-                 nba: int) -> None:
-        if len(player_list) == 0:
-            raise Player_generation_error
-        self.__all_achivements = set(achivement_list)
-        self.__players = []
-        for player in player_list:
-            achivements: set[str] = gen_player_achievements(
-                achivement_list, nba)
-            new_player: Player = Player(player, achivements)
-            self.__players.append(new_player)
-
-    def display_players_achivements(self) -> None:
-        for player in self.__players:
-            print(
-                f"Player: {player.get_name()}: {player.get_achivements()}"
-            )
-
-    def display_all_achivements(self) -> None:
-        print(
-            f"All distinct achievements: {self.__all_achivements}"
-        )
-
-    def commun_achivements(self) -> None:
-        set_list: list[set[str]] = []
-        for p in self.__players:
-            set_list.append(p.get_achivements())
-        commun: set[str] = set.intersection(*set_list[0:])
-        print(f"Common achievements: {commun}")
-
-    def only_has_achivements(self) -> None:
-        # nested loop for creating player set and set other set
-        for p in self.__players:
-            other_list: list[set[str]] = []
-            player_list: list[set[str]] = []
-            for x in self.__players:
-                name: str = p.get_name()
-                if name != x.get_name():
-                    other_list.append(x.get_achivements())
-                else:
-                    player_list.append(p.get_achivements())
-            only_has: set[str] = set(player_list[0])\
-                .difference(*other_list[0:])
-            print(f"Only {name} has: {only_has}")
-
-    def missing_achivement(self) -> None:
-        for p in self.__players:
-            missing: set[str] = set(self.__all_achivements)\
-                .difference(p.get_achivements())
-            print(f"{p.get_name()} is missing: {missing}")
-
-
 def gen_player_achievements(achivements: list[str], nba: int) -> set[str]:
     player_set: set[str] = set(random.sample(achivements, nba))
     return set(player_set)
@@ -124,22 +45,30 @@ if __name__ == "__main__":
         print(f"Player {p4_name}: {p4_set}")
         p5_name: str = "Jacque"
         p5_set: set[str] = gen_player_achievements(achivement_list, nba)
-        print(f"Player {p5_name}: {p5_set}")
-        print()
+        print(f"Player {p5_name}: {p5_set}\n")
         print(f"All distinct achievements: {set(achivement_list)}\n")
-        print(f"Common achievements: {set.intersection(p1_set, p2_set, p3_set, p4_set,p5_set)}")
-        print()
-        print(f"Only {p1_name} has: {set(p1_set).difference(p2_set, p3_set,p4_set, p5_set)}")
-        print(f"Only {p2_name} has: {set(p2_set).difference(p1_set, p3_set,p4_set, p5_set)}")
-        print(f"Only {p3_name} has: {set(p3_set).difference(p1_set, p2_set,p4_set, p5_set)}")
-        print(f"Only {p4_name} has: {set(p4_set).difference(p1_set, p2_set,p3_set, p5_set)}")
-        print(f"Only {p5_name} has: {set(p5_set).difference(p1_set, p2_set,p3_set, p4_set)}")
-        print()
-        print(f"{p1_name} is missing: {set(achivement_list).difference(p1_set)}")
-        print(f"{p2_name} is missing: {set(achivement_list).difference(p2_set)}")
-        print(f"{p3_name} is missing: {set(achivement_list).difference(p3_set)}")
-        print(f"{p4_name} is missing: {set(achivement_list).difference(p4_set)}")
-        print(f"{p5_name} is missing: {set(achivement_list).difference(p5_set)}")
-    except (Random_generation_error, Player_generation_error) as e:
+        print(
+            f"Common achievements: "
+            f"{set.intersection(p1_set, p2_set, p3_set, p4_set, p5_set)}\n")
+        print(f"Only {p1_name} has: "
+              f"{set(p1_set).difference(p2_set, p3_set, p4_set, p5_set)}")
+        print(f"Only {p2_name} has: "
+              f"{set(p2_set).difference(p1_set, p3_set, p4_set, p5_set)}")
+        print(f"Only {p3_name} has: "
+              f"{set(p3_set).difference(p1_set, p2_set, p4_set, p5_set)}")
+        print(f"Only {p4_name} has: "
+              f"{set(p4_set).difference(p1_set, p2_set, p3_set, p5_set)}")
+        print(f"Only {p5_name} has: "
+              f"{set(p5_set).difference(p1_set, p2_set, p3_set, p4_set)}\n")
+        print(f"{p1_name} is missing: "
+              f"{set(achivement_list).difference(p1_set)}")
+        print(f"{p2_name} is missing: "
+              f"{set(achivement_list).difference(p2_set)}")
+        print(f"{p3_name} is missing: "
+              f"{set(achivement_list).difference(p3_set)}")
+        print(f"{p4_name} is missing: "
+              f"{set(achivement_list).difference(p4_set)}")
+        print(f"{p5_name} is missing: "
+              f"{set(achivement_list).difference(p5_set)}\n")
+    except (Random_generation_error) as e:
         print(e)
-    

@@ -31,7 +31,7 @@ class Scores:
         return f"""Scores processed: {self.values}
 Total player: {self.total_player}
 Total score: {self.total_score}
-Average score: {float(self.avg_score)}
+Average score: {round(float(self.avg_score), 1)}
 High score: {self.high_score}
 Low score:: {self.low_score}
 Score range: {self.range_score}\n"""
@@ -39,16 +39,15 @@ Score range: {self.range_score}\n"""
 
 def process_arguments(argv: list[str]) -> list[int]:
     int_arr: list[int] = []
-    err: int = 0
     if len(argv) == 0:
         raise No_scores
     for arg in argv:
         try:
-            int_arr.append(int(arg))
+            # list concatenation
+            int_arr = int_arr + [int(arg)]
         except ValueError:
             print(f"invalid parameter: '{arg}'")
-            err = 1
-    if err == 1:
+    if len(int_arr) == 0:
         raise No_scores
     return int_arr
 
