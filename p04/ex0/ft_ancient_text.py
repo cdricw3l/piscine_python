@@ -9,14 +9,15 @@ if __name__ == "__main__":
     else:
         try:
             print("=== Cyber Archives Recovery ===")
-            print(f"Accessing file '{args[1]}'\n---")
+            print(f"Accessing file '{args[1]}'")
             fd: typing.IO = open(args[1])
+            print("---")
             line = fd.read()
             print("")
             print(line)
             fd.close()
-            print(f"\nFile '{args[1]}' closed.\n---")
-        except (FileNotFoundError,PermissionError) as e:
-            print(f"Error opening file '{args[1]}': {e}")
+            print(f"\n---\nFile '{args[1]}' closed.")
+        except Exception as e:
+            print(f"Error opening file '{args[1]}': {e}\n")
 
         
