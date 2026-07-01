@@ -9,16 +9,15 @@ if __name__ == "__main__":
         print("Usage: ft_ancient_text.py <file>\n")
     else:
         try:
-            
             print("=== Cyber Archives Recovery & Preservation ===")
             print(f"Accessing file '{args[1]}'")
             fd: typing.IO[str] = open(args[1])
             print("---\n")
-            line: str = fd.read()
-            print(line)
+            lines: str = fd.read()
+            print(lines)
             fd.close()
             print(f"\n---\nFile '{args[1]}' closed.\n")
-            split: list[str] = line.split('\n')
+            split: list[str] = lines.split('\n')
             transformed_data: str = ""
             for s in split:
                 transformed_data = transformed_data + s + '#\n'
@@ -33,5 +32,10 @@ if __name__ == "__main__":
                 new_file.write(transformed_data)
                 print(f"Data saved in file '{new_name}'\n")
                 new_file.close()
-        except Exception as e:
+        except (KeyboardInterrupt, EOFError):
+            print("\nNot saving data.")
+        except (Exception) as e:
             print(f"Error opening file '{args[1]}': {e}\n")
+        finally:
+            fd.close()
+            new_file.close()

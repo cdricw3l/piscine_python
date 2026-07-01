@@ -16,7 +16,9 @@ if __name__ == "__main__":
             line = fd.read()
             print("")
             print(line)
-            fd.close()
             print(f"\n---\nFile '{args[1]}' closed.")
+            fd.close()
         except Exception as e:
             print(f"Error opening file '{args[1]}': {e}\n")
+        finally:
+            fd.close()
