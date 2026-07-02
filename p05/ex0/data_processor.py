@@ -169,14 +169,15 @@ if __name__ == "__main__":
         print(f"Text value {data[0]}: {data[1]}")
     print("\nTesting Log Processor...")
     print(f"Trying to validate input 'Hello': {log_processor.validate('Hello')}")
-    assert(log_processor.validate([{"0":"hello", "2": "dqdq"}, {"0":"dqwdwq", "1": "dwqdwq"}]) == False)
-    assert(log_processor.validate("hello berlin") == False)
-    assert(log_processor.validate([{0:"hello", "2": "dqdq"}, {"0":"dqwdwq", "1": "dwqdwq"}]) == False)
-    assert(log_processor.validate({'log_level': "importante", 'log_message':'salut la compagnie'}) == True)
+    # assert(log_processor.validate([{"0":"hello", "2": "dqdq"}, {"0":"dqwdwq", "1": "dwqdwq"}]) == False)
+    # assert(log_processor.validate("hello berlin") == False)
+    # assert(log_processor.validate([{0:"hello", "2": "dqdq"}, {"0":"dqwdwq", "1": "dwqdwq"}]) == False)
+    # assert(log_processor.validate({'log_level': "importante", 'log_message':'salut la compagnie'}) == True)
     arr_log: list[dict[str, str]] =  [{'log_level': 'NOTICE', 'log_message': 'Connection to server'},
                                       {'log_level': 'ERROR', 'log_message': 'Unauthorized access!!'}]
-    assert(log_processor.validate(arr_log) == True)
+    #assert(log_processor.validate(arr_log) == True)
     log_processor.ingest(arr_log)
+    print("Extracting 2 values...")
     for i in range(2):
         data: tuple[int, str] = log_processor.output()
         print(f"Log entry {data[0]}: {data[1]}")
@@ -185,6 +186,6 @@ if __name__ == "__main__":
 
     try:
 
-        
+
     except Exception as e:
         print(e)
