@@ -181,11 +181,3 @@ if __name__ == "__main__":
     for i in range(2):
         data: tuple[int, str] = log_processor.output()
         print(f"Log entry {data[0]}: {data[1]}")
-    arr_log: list[dict[str, str]] =  [{'log_level': 'NOTICE', 'log_message': 'Connection to server', 'test': 'false'},
-                                      {'log_level': 'ERROR', 'log_message': 'Unauthorized access!!'}]
-
-    try:
-
-
-    except Exception as e:
-        print(e)
