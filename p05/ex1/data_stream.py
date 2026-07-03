@@ -5,9 +5,21 @@ from typing import Any
 class DataProcessor(ABC):
 
     _data: dict[int, str]
+    _processed_numeric: int
+    _processed_text: int
+    _processed_log: int
+    _remaining_numeric: int
+    _remaining_text: int
+    _remaining_log: int
 
     def __init__(self) -> None:
         self._data = {}
+        self._processed_numeric = 0
+        self._remaining_numeric = 0
+        self._processed_text = 0
+        self._remaining_text = 0
+        self._processed_log = 0
+        self._remaining_log = 0
 
     @abstractmethod
     def validate(self, data: Any) -> bool:
@@ -16,6 +28,24 @@ class DataProcessor(ABC):
     @abstractmethod
     def ingest(self, data: Any) -> None:
         pass
+
+    def set_processed(self, code: str, value: int) -> None:
+        match code:
+            case 'NUMERIC':
+                self._processed_numeric += value
+            case 'TEXT':
+                self._processed_text += value
+            case 'LOG':
+                self._processed_log += value
+
+    def set_remaining(self, code: str, value: int) -> None:
+        match code:
+            case 'NUMERIC':
+                self._remaining_numeric += value
+            case 'TEXT':
+                self._remaining_text += value
+            case 'LOG':
+                self._remaining_log += value
 
     def output(self) -> tuple[int, str]:
         if len(self._data) == 0:
@@ -51,9 +81,14 @@ class NumericProcessor(DataProcessor):
 
         match type(data).__name__:
             case 'int':
-                self._data.update({len(self._data): str(data)})
+                self._data.update({self._processed_numeric: str(data)})
+                self.set_processed('NUMERIC', 1)
+                self.set_remaining('NUMERIC', 1)
             case 'float':
-                self._data.update({len(self._data): str(data)})
+                self._data.update({self._processed_numeric: str(data)})
+                self.set_processed('NUMERIC', 1)
+                self.set_remaining('NUMERIC', 1)
+
             case 'list':
                 # mypy [union-attr]: see documentation
                 # -> mypy.readthedocs.io/en/stable/error_code_list.html
@@ -62,9 +97,11 @@ class NumericProcessor(DataProcessor):
                 for value in values:
                     if self.validate(value) is False:
                         raise Exception("Improper numeric data")
-                    k: int = len(self._data)
+                    k: int = self._processed_numeric
                     v: str = str(value)
                     self._data.update({k: v})
+                    self.set_processed('NUMERIC', 1)
+                    self.set_remaining('NUMERIC', 1)
             case _:
                 raise Exception("Improper numeric data")
 
@@ -88,13 +125,17 @@ class TextProcessor(DataProcessor):
     def ingest(self, data: str | list[str]) -> None:
         match type(data).__name__:
             case 'str':
-                self._data.update({len(self._data): str(data)})
+                self._data.update({self._processed_text: str(data)})
+                self.set_processed('TEXT', 1)
+                self.set_remaining('TEXT', 1)
             case 'list':
                 for value in data:
                     if self.validate(value) is False:
                         raise Exception("Improper text data")
-                    key: int = len(self._data)
+                    key: int = self._processed_text
                     self._data.update({key: value})
+                    self.set_processed('TEXT', 1)
+                    self.set_remaining('TEXT', 1)
             case _:
                 raise Exception("Improper text data")
 
@@ -142,6 +183,8 @@ class LogProcessor(DataProcessor):
                 log_message: str | None = value.get('log_message')
                 self._data.update(
                     {len(self._data): f"{log_level}: {log_message}"})
+                self.set_processed('LOG', 1)
+                self.set_remaining('LOG', 1)
             case 'list':
                 if self.validate(data) is False:
                     raise Exception("Improper log data")
@@ -150,7 +193,9 @@ class LogProcessor(DataProcessor):
                     log_level = value.get('log_level')
                     log_message = value.get('log_message')
                     self._data.update(
-                        {len(self._data): f"{log_level}: {log_message}"})
+                        {self._processed_log: f"{log_level}: {log_message}"})
+                    self.set_processed('LOG', 1)
+                    self.set_remaining('LOG', 1)
             case _:
                 raise Exception("Improper log data")
 
@@ -158,15 +203,9 @@ class LogProcessor(DataProcessor):
 class DataStream:
 
     __proc: list[DataProcessor]
-    __numeric_data: dict[str, int]
-    __text_data: dict[str, int]
-    __log_data: dict[str, int]
 
     def __init__(self) -> None:
         self.__proc = []
-        self.__numeric_data = {'processed': 0, 'remaining': 0}
-        self.__text_data = {'processed': 0, 'remaining': 0}
-        self.__log_data = {'processed': 0, 'remaining': 0}
 
     def get_proc(self) -> list[DataProcessor]:
         return self.__proc
@@ -185,99 +224,82 @@ class DataStream:
                       f"Can't process element in stream: {item}")
             else:
                 proc.ingest(item)
-                if isinstance(proc, NumericProcessor) is True:
-                    processed: int = self.__numeric_data['processed']
-                    + len(item) if isinstance(item, list) is True else\
-                        self.__numeric_data['processed'] + 1
-                    remaining: int = self.__numeric_data['remaining']
-                    + len(item) if isinstance(item, list) is True else\
-                        self.__numeric_data['remaining'] + 1
-                    self.__numeric_data.update({'processed': processed})
-                    self.__numeric_data.update({'remaining': remaining})
-                if isinstance(proc, TextProcessor) is True:
-                    value = self.__text_data['processed']
-                    + len(item) if isinstance(item, list) is True else\
-                        self.__text_data['processed'] + 1
-                    remaining = self.__text_data['remaining']
-                    + len(item) if isinstance(item, list) is True else\
-                        self.__text_data['remaining'] + 1
-                    self.__text_data.update({'processed': value})
-                    self.__text_data.update({'remaining': remaining})
-                if isinstance(proc, LogProcessor) is True:
-                    value = self.__log_data['processed']
-                    + len(item) if isinstance(item, list) is True else\
-                        self.__log_data['processed'] + 1
-                    remaining = self.__log_data['remaining']
-                    + len(item) if isinstance(item, list) is True else\
-                        self.__log_data['remaining'] + 1
-                    self.__log_data.update({'processed': value})
-                    self.__log_data.update({'remaining': remaining})
 
     def print_processors_stats(self) -> None:
-        print("== DataStream statistic")
+        print("== DataStream statistics ==")
         if len(self.__proc) == 0:
             print("No processor found, no data")
         for proc in self.__proc:
             if isinstance(proc, NumericProcessor):
                 proc_type: str = 'Numeric'
-                total: int = self.__numeric_data['processed']
-                remaining: int = self.__numeric_data['remaining']
+                total: int = proc._processed_numeric
+                remaining: int = proc._remaining_numeric
             if isinstance(proc, TextProcessor):
                 proc_type = 'Text'
-                total = self.__text_data['processed']
-                remaining = self.__text_data['remaining']
+                total = proc._processed_text
+                remaining = proc._remaining_text
             if isinstance(proc, LogProcessor):
                 proc_type = 'Log'
-                total = self.__log_data['processed']
-                remaining = self.__log_data['remaining']
+                total = proc._processed_log
+                remaining = proc._remaining_log
             print(f"{proc_type} Processor: total {total} items processed, "
                   f"remaining {remaining} on processor")
 
     def consume_data(self, stream: DataProcessor) -> tuple[int, str]:
-        data: tuple[int, str] = stream.output()
-        if isinstance(stream, NumericProcessor):
-            remaining: int = self.__numeric_data['remaining'] - 1
-            self.__numeric_data.update({'remaining': remaining})
-        if isinstance(stream, TextProcessor):
-            remaining = self.__text_data['remaining'] - 1
-            self.__text_data.update({'remaining': remaining})
-        if isinstance(stream, LogProcessor):
-            remaining = self.__log_data['remaining'] - 1
-            self.__log_data.update({'remaining': remaining})
+        try:
+            data: tuple[int, str] = stream.output()
+            if isinstance(stream, NumericProcessor):
+                stream.set_remaining('NUMERIC', -1)
+            if isinstance(stream, TextProcessor):
+                actual_remaining = stream._remaining_text
+                if actual_remaining > 0:
+                    stream.set_remaining('TEXT', -1)
+            if isinstance(stream, LogProcessor):
+                actual_remaining = stream._remaining_log
+                if actual_remaining > 0:
+                    stream.set_remaining('LOG', -1)
+        except Exception as e:
+            raise e
         return data
 
 
 if __name__ == "__main__":
-    print("=== Code Nexus - Data Stream ===")
+    print("=== Code Nexus - Data Stream ===\n")
 
-    print("Initialize Data Stream...")
+    print("Initialize Data Stream...\n")
     stream: DataStream = DataStream()
     stream.print_processors_stats()
     print("\nRegistering Numeric Processor")
     numeric_processor: NumericProcessor = NumericProcessor()
     stream.register_processor(numeric_processor)
     data_batch: list[Any] = ['Hello world',
-                                    [3.14, -1, 2.71],
-                                    [{'log_level': 'WARNING',
-                                     'log_message':
-                                        'Telnet access! Use ssh instead'},
-                                     {'log_level': 'INFO',
-                                     'log_message': 'User wil isconnected'}],
-                                    42, ['Hi', 'five']]
-    print(f"Send first batch of data "
+                             [3.14, -1, 2.71],
+                             [{'log_level': 'WARNING',
+                               'log_message':
+                               'Telnet access! Use ssh instead'},
+                              {'log_level': 'INFO',
+                               'log_message': 'User wil isconnected'}],
+                             42, ['Hi', 'five']]
+    print(f"\nSend first batch of data "
           f"on stream: {data_batch}")
-    stream.process_stream(data_batch)
+    try:
+        stream.process_stream(data_batch)
+    except Exception as e:
+        print(e)
     stream.print_processors_stats()
 
-    print("Registering other data processors")
+    print("\nRegistering other data processors")
     text_processor: TextProcessor = TextProcessor()
     log_processor: LogProcessor = LogProcessor()
     stream.register_processor(text_processor)
     stream.register_processor(log_processor)
     print("Send the same batch again")
-    stream.process_stream(data_batch)
+    try:
+        stream.process_stream(data_batch)
+    except Exception as e:
+        print(e)
     stream.print_processors_stats()
-    print("Consume some elements from "
+    print("\nConsume some elements from "
           "the data processors: Numeric 3, Text 2, Log 1")
     try:
         stream.consume_data(numeric_processor)

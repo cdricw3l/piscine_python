@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-import typing
+from typing import Any
 
 
 class DataProcessor(ABC):
@@ -10,11 +10,11 @@ class DataProcessor(ABC):
         self._data = {}
 
     @abstractmethod
-    def validate(self, data: typing.Any) -> bool:
+    def validate(self, data: Any) -> bool:
         pass
 
     @abstractmethod
-    def ingest(self, data: typing.Any) -> None:
+    def ingest(self, data: Any) -> None:
         pass
 
     def output(self) -> tuple[int, str]:
@@ -23,9 +23,9 @@ class DataProcessor(ABC):
                             f"{self.__class__.__name__} is empty")
         key: int = list(self._data.keys())[0]
         value: str | None = self._data.get(key)
-        self._data.pop(key)
         if value is None:
             raise Exception("output error value is None")
+        self._data.pop(key)
         return (key, value)
 
 
@@ -34,7 +34,7 @@ class NumericProcessor(DataProcessor):
     def __init__(self) -> None:
         super().__init__()
 
-    def validate(self, data: typing.Any) -> bool:
+    def validate(self, data: Any) -> bool:
         match type(data).__name__:
             case 'int':
                 return True
@@ -74,7 +74,7 @@ class TextProcessor(DataProcessor):
     def __init__(self) -> None:
         super().__init__()
 
-    def validate(self, data: typing.Any) -> bool:
+    def validate(self, data: Any) -> bool:
         match type(data).__name__:
             case 'str':
                 return True
@@ -104,7 +104,7 @@ class LogProcessor(DataProcessor):
     def __init__(self) -> None:
         super().__init__()
 
-    def validate(self, data: typing.Any) -> bool:
+    def validate(self, data: Any) -> bool:
         match type(data).__name__:
             case 'dict':
                 if 'log_level' not in data or 'log_message' not in data:
@@ -161,7 +161,6 @@ if __name__ == "__main__":
     text_processor: TextProcessor = TextProcessor()
     log_processor: LogProcessor = LogProcessor()
     print("=== Code Nexus - Data Processor ===")
-
     print("\nTesting Numeric Processor...")
 
     print(f"Trying to validate input '42': {num.validate(42)}")
@@ -176,26 +175,30 @@ if __name__ == "__main__":
 
     arr_num: list[int | float] = [1, 2, 3, 4, 5]
     print(f"Processing data: {arr_num}")
-    num.validate(arr_num)
-    num.ingest(arr_num)
-    print("Extracting 3 values...")
-    for i in range(3):
-        data: tuple[int, str] = num.output()
-        print(f"Numeric value {data[0]}: {data[1]}")
+    try:
+        num.validate(arr_num)
+        num.ingest(arr_num)
+        print("Extracting 3 values...")
+        for i in range(3):
+            data: tuple[int, str] = num.output()
+            print(f"Numeric value {data[0]}: {data[1]}")
+    except Exception as e:
+        print(e)
 
     print("\nTesting Text Processor...")
-
     print(f"Trying to validate input '42': {text_processor.validate(42)}")
 
     arr_text: list[str] = ["Hello", "Nexus", "World"]
     print(f"Processing data: {arr_text}")
-    text_processor.validate(arr_text)
-    text_processor.ingest(arr_text)
-    print("Extracting 1 values...")
-    for i in range(1):
-        data = text_processor.output()
-        print(f"Text value {data[0]}: {data[1]}")
-
+    try:
+        text_processor.validate(arr_text)
+        text_processor.ingest(arr_text)
+        print("Extracting 1 values...")
+        for i in range(1):
+            data = text_processor.output()
+            print(f"Text value {data[0]}: {data[1]}")
+    except Exception as e:
+        print(e)
     print("\nTesting Log Processor...")
 
     print(f"Trying to validate input 'Hello': "
@@ -206,8 +209,12 @@ if __name__ == "__main__":
                                      {'log_level': 'ERROR',
                                       'log_message': 'Unauthorized access!!'
                                       }]
-    log_processor.ingest(arr_log)
-    print("Extracting 2 values...")
-    for i in range(2):
-        data = log_processor.output()
-        print(f"Log entry {data[0]}: {data[1]}")
+    print(f"Processing data: {arr_log}")
+    try:
+        log_processor.ingest(arr_log)
+        print("Extracting 2 values...")
+        for i in range(2):
+            data = log_processor.output()
+            print(f"Log entry {data[0]}: {data[1]}")
+    except Exception as e:
+        print(e)
