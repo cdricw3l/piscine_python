@@ -1,7 +1,6 @@
 
 from .elements import create_air, create_earth
 from elements import create_fire, create_water
-# Need to know why elements import element from the top of the project
 
 
 def healing_potion() -> str:
