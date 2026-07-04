@@ -1,5 +1,7 @@
 
 def validate_ingredients(ingredients: str) -> str:
+    # Deferred import or lazy import
+    # other way top level managment
     from . import light_spell_allowed_ingredients
     valide: bool = False
     string: str = ""
