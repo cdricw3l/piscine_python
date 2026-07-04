@@ -1,12 +1,13 @@
 
-def validate_ingredients(ingredients: str) -> str:
-    from . import light_spell_allowed_ingredients
+from .dark_spellbook import dark_spell_allowed_ingredients
+
+def dark_validate_ingredients(ingredients: str) -> str:
     valide: bool = False
     string: str = ""
     arr_str: list[str] = ingredients.split(' ') 
     size: int = len(arr_str) - 1
     for ingredient in arr_str:
-        allowed: list[str] = [x.capitalize() for x in light_spell_allowed_ingredients()]
+        allowed: list[str] = [x.capitalize() for x in dark_spell_allowed_ingredients()]
         if ingredient.capitalize() in allowed:
             valide = True
         if arr_str.index(ingredient) == size - 1:
