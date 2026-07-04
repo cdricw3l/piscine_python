@@ -1,0 +1,1 @@
+from .light_validator import validate_ingredients
