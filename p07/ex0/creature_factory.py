@@ -2,73 +2,65 @@ from abc import ABC, abstractmethod
 
 
 class Creature(ABC):
-    __name: str
-    __type: str
+    """ Creature Abstract Base Class"""
+
+    name: str
+    type: str
 
     def __init__(self, name: str, type: str) -> None:
-        self.__name = name.capitalize()
-        self.__type = type.capitalize()
-
-    def get_name(self) -> str:
-        return self.__name
+        self.name = name.capitalize()
+        self.type = type.capitalize()
 
     @abstractmethod
     def attack(self) -> str:
         pass
 
     def describe(self) -> str:
-        return f"{self.__name} is a {self.__type} Creature"
+        return f"{self.name} is a {self.type} Creature"
 
 
 class Flameling(Creature):
-
-    __attack: str
+    """ Fire base creature """
 
     def __init__(self) -> None:
         super().__init__('Flameling', 'Fire')
-        self.__attack = 'Ember'
 
     def attack(self) -> str:
-        return f"{self.get_name()} use {self.__attack}!"
+        return f"{self.name} use Ember!"
 
 
 class Pyrodon(Creature):
-
-    __attack: str
+    """ Fire evolved creature """
 
     def __init__(self) -> None:
         super().__init__('Pyrodon', ' Fire/Flying')
-        self.__attack = 'Flamethrower'
 
     def attack(self) -> str:
-        return f"{self.get_name()} use {self.__attack}!"
+        return f"{self.name} use Flamethrower!"
 
 
 class Aquabub(Creature):
-
-    __attack: str
+    """ Aqua base creature """
 
     def __init__(self) -> None:
         super().__init__('Aquabub', 'Water')
-        self.__attack = 'Water Gun'
 
     def attack(self) -> str:
-        return f"{self.get_name()} use {self.__attack}!"
+        return f"{self.name} use Water Gun!"
 
 
 class Torragon(Creature):
-
-    __attack: str
+    """ Aqua evolved creature """
 
     def __init__(self) -> None:
         super().__init__('Torragon', 'Water')
-        self.__attack = 'Hydro Pump'
 
     def attack(self) -> str:
-        return f"{self.get_name()} use {self.__attack}!"
+        return f"{self.name} use Hydro Pump!"
 
 
 class CreatureFactory(ABC):
+    """ Abstact base class for creature factory """
 
     @abstractmethod
     def create_base(self) -> Creature:
@@ -80,6 +72,7 @@ class CreatureFactory(ABC):
 
 
 class FlameFactory(CreatureFactory):
+    """ Factory for fire creature """
 
     def create_base(self) -> Flameling:
         return Flameling()
@@ -89,6 +82,7 @@ class FlameFactory(CreatureFactory):
 
 
 class AquaFactory(CreatureFactory):
+    """ Factory for aqua creature """
 
     def create_base(self) -> Aquabub:
         return Aquabub()

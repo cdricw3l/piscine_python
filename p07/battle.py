@@ -17,10 +17,10 @@ def test_factory(factory: CreatureFactory) -> bool:
     return True
 
 
-def fight(flame_factory: FlameFactory, aqua_factory: AquaFactory) -> None:
+def fight(factory_1: CreatureFactory, factory_2: CreatureFactory) -> None:
     print("Testing battle")
-    flamme_base = flame_factory.create_base()
-    aqua_base = aqua_factory.create_base()
+    flamme_base = factory_1.create_base()
+    aqua_base = factory_2.create_base()
 
     print(f"{flamme_base.describe()}\n vs.\n{aqua_base.describe()}\n fight!")
     print(flamme_base.attack())
@@ -31,6 +31,7 @@ if __name__ == "__main__":
 
     flamme_factory: FlameFactory = FlameFactory()
     aqua_factory: AquaFactory = AquaFactory()
+
     if test_factory(
         flamme_factory) is True and test_factory(
             aqua_factory) is True:

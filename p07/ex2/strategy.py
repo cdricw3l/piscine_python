@@ -1,53 +1,66 @@
 from abc import ABC, abstractmethod
 from ex0.creature_factory import Creature
-from ex1.capabilities_factory import TransformCreatureFactory, HealingCreatureFactory, CreatureFactory, TransformCapability
+from ex1.capabilities_factory import HealCapability, TransformCapability
+from typing import cast
+
+
+class Bad_combinaison(Exception):
+
+    def __init__(self, name: str, strategy: str) -> None:
+        super().__init__(f"Battle error, "
+                         f"aborting tournament: Invalid Creature "
+                         f"'{name}'for this {strategy} strategy")
+
+
 class BattleStrategy(ABC):
 
     @abstractmethod
-    def act(self):
+    def is_valide(self, creature: Creature) -> bool:
         pass
-    
+
     @abstractmethod
-    def is_valide(self) -> bool:
+    def act(self, creature: Creature) -> None:
         pass
+
 
 class NormalStrategy(BattleStrategy):
-    
-    __creature: Creature
 
-    def __init__(self, creature: Creature):
-        super().__init__()
-        self.__creature = creature
-    
-    def is_valide(self, creature: Creature):
-        if  issubclass(creature.__class__, Creature):
+    def is_valide(self, creature: Creature) -> bool:
+        if issubclass(creature.__class__, Creature):
             return True
         return False
-    
-    def act(self):
-        print(self.__creature.attack())
+
+    def act(self, creature: Creature) -> None:
+        print(creature.attack())
+
 
 class AggressiveStrategy(BattleStrategy):
 
-    __creature: TransformCapability
-    
-    def __init__(self, creature: TransformCapability):
-        super().__init__()
-        self.__creature = creature
-
-    def is_valide(self, creature):
-        if  issubclass(creature.__class__, TransformCreatureFactory):
+    def is_valide(self, creature: Creature) -> bool:
+        if issubclass(creature.__class__, TransformCapability):
             return True
         return False
 
-    def act(self):
-        print(self.__creature.transform())
+    def act(self, creature: Creature) -> None:
+
+        if self.is_valide(creature) is not True:
+            raise Bad_combinaison(creature.name, "aggressive")
+        bestiol = cast(TransformCapability, creature)
+        print(bestiol.transform())
+        print(bestiol.get_attack())
+        print(bestiol.revert())
+
 
 class DefensiveStrategy(BattleStrategy):
-    def is_valide(self, creature: Creature):
-        if  issubclass(creature.__class__, HealingCreatureFactory):
+
+    def is_valide(self, creature: Creature) -> bool:
+        if issubclass(creature.__class__, HealCapability):
             return True
         return False
 
-    def act(self):
-        pass
+    def act(self, creature: Creature) -> None:
+        if self.is_valide(creature) is not True:
+            raise Bad_combinaison(creature.name, "defensive")
+        print(creature.attack())
+        bestiol = cast(HealCapability, creature)
+        print(bestiol.heal())
