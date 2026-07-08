@@ -1,6 +1,19 @@
 from importlib import util, metadata
 import sys
 
+try:
+    import pandas as pd  # type: ignore[import-untyped]
+except (ImportError, ImportWarning):
+    pass
+try:
+    import numpy as np  # type: ignore[import-not-found]
+except (ImportError, ImportWarning):
+    pass
+try:
+    import matplotlib.pyplot as plt  # type: ignore[import-not-found]
+except (ImportError, ImportWarning):
+    pass
+
 
 class Color_line():
     BLACK: str = "\033[90m"
@@ -53,13 +66,9 @@ def get_pie_color(key: str) -> str | None:
 
 def create_data_set() -> None:
 
-    import pandas as pd  # type: ignore[import-untyped]
-    import numpy as np  # type: ignore[import-not-found]
-    import matplotlib.pyplot as plt  # type: ignore[import-not-found]
-
     arr: np.typing.NDArray = np.random.randint(
         low=0, high=500, size=(1, 1000)).round(2)
-    print("Analyzing Matrix data...")
+    print("\nAnalyzing Matrix data...")
     frame = pd.DataFrame({"value": arr[0]})
     sets: dict[str, pd.DataFrame] = {
         '< 100': frame.query('value <= 100'),
@@ -88,6 +97,7 @@ def create_data_set() -> None:
 
 
 def check_dependancy(dependencys: dict[str, str]) -> bool:
+    print("Checking dependencies:")
     is_complete: bool = True
     for dependency in dependencys:
         dependency = dependency.strip()
@@ -103,11 +113,11 @@ def check_dependancy(dependencys: dict[str, str]) -> bool:
         if sys.base_prefix == sys.prefix:
             print(f"\n{Color_line.RED}Your are not in "
                   "a python virtual environment"
-                  f"\nfollow the instruction below "
-                  f"for install a python virtual environment:"
+                  f"\nFollow the instructions below "
+                  f"to install a Python virtual environment."
                   f"{Color_line.RESET}")
             venv_instruction()
-        print(f"Dependance installation instruction:\n"
+        print(f"\nDependance installation instruction:\n"
               f"{Color_line.YELLOW}pip install -r "
               f"requirements.txt{Color_line.RESET}")
         print(f" or\n{Color_line.YELLOW}poetry install{Color_line.RESET}")
@@ -117,6 +127,7 @@ def check_dependancy(dependencys: dict[str, str]) -> bool:
 
 if __name__ == "__main__":
 
+    print("\nLOADING STATUS: Loading programs...\n")
     check: bool = check_dependancy({'pandas': 'Data manipulation',
                                     'numpy': 'Numerical computation',
                                     'matplotlib': 'Visualization'})

@@ -36,7 +36,7 @@ if __name__ == "__main__":
         print("Then run this program again")
     else:
         print("\nMATRIX STATUS: Welcome to the construct\n")
-        print(f"Current Python: {sys.executable}")
+        print(f"Current Python: {interpreter()}")
         print(f"Virtual Environment: {get_vitual_env()}")
         print(f"Environment Path: {sys.prefix}\n")
         print("SUCCESS: You're in an isolated environment!")
