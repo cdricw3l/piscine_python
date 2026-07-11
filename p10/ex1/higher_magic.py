@@ -65,7 +65,7 @@ def spells_combinaison_test(target_power: dict[str, int],
         combined: Callable = spell_combiner(spell1, spell2)
         print(f"\n{Color.YELLOW}Combine two spells test:{Color.RESET}\n")
         for target in target_power:
-            if target_power['target'] > 0:
+            if target_power[target] > 0:
                 comb: tuple = combined(target, target_power.get(target))
             print(f"{Color.RED}{comb[0]}, {Color.GREEN}{comb[1]}{Color.RESET}")
     except Exception as e:
