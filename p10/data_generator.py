@@ -191,7 +191,11 @@ def main():
         print("q. Quit")
         print()
 
-        choice = input("Enter your choice: ").strip().lower()
+        try:
+            choice = input("Enter your choice: ").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            print("May your functions be pure and your closures be strong! 🌟")
+            break
 
         if choice == 'q':
             print("May your functions be pure and your closures be strong! 🌟")

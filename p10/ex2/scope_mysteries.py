@@ -8,6 +8,8 @@ class Color:
     RESET: str = "\033[0m"
 
 
+# Create a counting closure
+# Callable typing -> Take no argument, return an int
 def mage_counter() -> Callable[[], int]:
     count: int = 0
 
@@ -18,6 +20,8 @@ def mage_counter() -> Callable[[], int]:
     return counter
 
 
+# Create power accumulator
+# Callable typing -> Take int argument, return an int
 def spell_accumulator(initial_power: int) -> Callable[[int], int]:
     counter: int = initial_power
 
@@ -28,6 +32,8 @@ def spell_accumulator(initial_power: int) -> Callable[[int], int]:
     return acc
 
 
+# Create enchantment functions:
+# Callable typing -> Take str argument, return an str
 def enchantment_factory(enchantment_type: str) -> Callable[[str], str]:
 
     def enchantment(item_name: str) -> str:
@@ -35,45 +41,60 @@ def enchantment_factory(enchantment_type: str) -> Callable[[str], str]:
     return enchantment
 
 
-def memory_vault() -> dict[str, (Callable[[Any, Any], None] | Callable[[Any], Any | str])]:
-    vault: dict[Any, Any] = {}
+# Create a memory management system
+# Callable typing -> Take variadique lis of arguments
+# return Any type
+def memory_vault() -> dict[str, Callable[..., Any]]:
+    __vault: dict[Any, Any] = {}
 
-    def store(key: Any, value: Any) -> None:
-        nonlocal vault
-        vault.update({key: value})
+    def store(key: Any, value: Any) -> bool:
+        nonlocal __vault
+        try:
+            __vault[key] = value
+        except Exception as e:
+            print(f"{e.__class__.__name__}: {e}")
+            False
+        return True
 
     def recall(key: Any) -> Any | str:
-        value: Any = vault.get(key)
+        value: Any = __vault.get(key)
         if value is None:
             return "Memory not found"
         return value
+
     return {'store': store, 'recall': recall}
 
 
+# Fonction call counter
 def mage_counter_test() -> None:
-    counter_a: Callable[[], int] = mage_counter()
-    counter_b: Callable[[], int] = mage_counter()
-    print(f"{Color.YELLOW}Testing mage counter...{Color.RESET}")
-    print(f"counter_a call 1: {counter_a()}")
-    print(f"counter_a call 2: {counter_a()}")
-    print(f"counter_a call 3: {counter_a()}")
-    print(f"counter_b call 1: {counter_b()}")
-    print(f"counter_b call 2: {counter_b()}")
-    print(f"counter_a call 4: {counter_a()}")
-    print(f"counter_a call 5: {counter_b()}")
+    try:
+        counter_a: Callable[[], int] = mage_counter()
+        counter_b: Callable[[], int] = mage_counter()
+        print(f"{Color.YELLOW}Testing mage counter...{Color.RESET}")
+        print(f"counter_a call 1: {counter_a()}")
+        print(f"counter_a call 2: {counter_a()}")
+        print(f"counter_a call 3: {counter_a()}")
+        print(f"counter_b call 1: {counter_b()}")
+        print(f"counter_b call 2: {counter_b()}")
+        print(f"counter_a call 4: {counter_a()}")
+        print(f"counter_a call 5: {counter_b()}")
+    except Exception as e:
+        print(f"{e.__class__.__name__}: {e}")
 
 
+# Accumulation counter test
 def spell_accumulator_test(base: int, add: list[int]) -> None:
 
     try:
         print(f"\n{Color.YELLOW}Testing spell accumulator...{Color.RESET}")
-        acc: Callable[[int], int] = spell_accumulator(100)
+        acc: Callable[[int], int] = spell_accumulator(base)
         for value in add:
             print(f"Base {base}, add {value}: {acc(value)}")
     except Exception as e:
         print(f"{e.__class__.__name__}: {e}")
 
 
+# Enchantment factory test
 def enchantment_factory_test(enchantment_types: list[str],
                              items_to_enchant: list[str]) -> None:
 
@@ -81,7 +102,8 @@ def enchantment_factory_test(enchantment_types: list[str],
     try:
         for enchantment in enchantment_types:
             for item in items_to_enchant:
-                factory: Callable[[str], str] = enchantment_factory(enchantment)
+                factory: Callable[[str], str] =\
+                    enchantment_factory(enchantment)
                 print(factory(item))
             print()
     except Exception as e:
@@ -90,13 +112,16 @@ def enchantment_factory_test(enchantment_types: list[str],
 
 def memory_vault_test() -> None:
     print(f"\n{Color.YELLOW}Testing memory vault...{Color.RESET}")
-    vault: dict[str, Callable[[Any, Any], None] | Callable[[Any], Any | str]] = memory_vault()
-    print("Store 'secret'= 42")
-    store: Callable[[Any, Any], None]  = vault['store']
-    call: Callable[[Any], Any | str] = vault['recall']
-    store('secret', 42)
-    print(f"Recall 'secret': {call('secret')}")
-    print(f"Recall 'unknown': {call('unknown')}")
+    try:
+        vault = memory_vault()
+        print("Store 'secret'= 42")
+        store = vault['store']
+        call = vault['recall']
+        store('secret', 42)
+        print(f"Recall 'secret': {call('secret')}")
+        print(f"Recall 'unknown': {call('unknown')}")
+    except Exception as e:
+        print(f"{e.__class__.__name__}: {e}")
 
 
 if __name__ == "__main__":
