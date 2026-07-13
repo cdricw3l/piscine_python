@@ -25,21 +25,38 @@ def spell_timer(func: Callable) -> Callable:
 
 
 # !!! Need to undestand deeper: https://stackoverflow.com/questions/61233508/parameterized-decorators-in-python
-def power_validator(min_power: int, i: int) -> Callable:
+def power_validator(min_power: int) -> Callable:
     def validator(func: Callable):
         @wraps(func)
-        def check(*args):
-            print(args)
-            if args[0] < min_power:
-                raise Exception("Insufficient power for this spell")
-        return check
+        # *args is a tuple of all argument passed to the fonction
+        def wrapper(*args):
+            if args[2] < min_power:
+                return "Insufficient power for this spell"
+            return func(*args)
+        return wrapper
     return validator
 
 
 
-# def retry_spell(max_attempts: int) -> Callable:
-#     def retry(func):
-#         @wraps()
+def retry_spell(max_attempts: int) -> Callable:
+    def retry(func):
+        func.retry = 0
+        @wraps(func)    
+        def wrapper(*args, **kwargs):
+            try:
+                print(args)
+                func(args[0])
+                print("Waaaaaaagh spelled !")
+            except Exception as e:
+                if func.retry == max_attempts:
+                    print(f"Spell casting failed after {max_attempts} attempts")
+                else:
+                    print(f"Spell failed, retrying... (attempt {func.retry + 1}/{max_attempts})")
+                    func.retry += 1
+                    wrapper(args, kwargs)
+        return wrapper
+    return retry
+            
 
 class MageGuild:
 
@@ -47,8 +64,9 @@ class MageGuild:
     def validate_mage_name(name: str) -> bool:
         pass
 
+    @power_validator(20)
     def cast_spell(self, spell_name: str, power: int) -> str:
-        pass
+        return f"{spell_name} as a power {power}"
 
 
 def fireball(ex_simulation_time: int = 3.1568) -> str:
@@ -62,21 +80,26 @@ def spell_timer_test():
         # create a timer wrapper for fireball
         casting_fireball = spell_timer(fireball)
         result: str = casting_fireball()
-        print(f"Result: {result}")
+        print(f"Result: {result}")  
     except Exception as e:
         print(f"\n{Color.RED}{e.__class__.__name__}: {e}{Color.RESET}")
 
-@power_validator(20,21)
 def power_validator_test(power: int):
-    pass
-    
+    mage: MageGuild = MageGuild()
+    print(mage.cast_spell("hello", power))
+
+@retry_spell(3)
+def max_retry(mode: int):
+    if mode == 0:
+        raise Exception
+    else:
+        pass
+        
+
 if __name__ == "__main__":
     #spell_timer_test()
-    try:
-        power_validator_test(20)
-    except Exception as e:
-        print(e)
-
-
+    #power_validator_test(21)
+    max_retry(0)
+    #max_retry(1)
 
     
