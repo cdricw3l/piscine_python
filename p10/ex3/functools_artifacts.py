@@ -22,8 +22,8 @@ def enchantment(power: int, element: str, target: str) -> str:
     return f"{element} hit {target} for {power} HP"
 
 
-# reducer exectute operation and stock the value in accumulateur
-# like reduce in javascript
+# `reducer` executes an operation and stores the value in the accumulator.
+# It works like `reduce` in JavaScript.
 def spell_reducer(spells: list[int], operation: str) -> int:
     match operation:
         case 'add':
@@ -39,14 +39,14 @@ def spell_reducer(spells: list[int], operation: str) -> int:
     return 0
 
 
-# functools.partial pre fill parametre for given fonction
+# `functools.partial` pre-fills parameters for a given function.
 def partial_enchanter(base_enchantment:
-                      Callable[[int, str, str], str])\
-                        -> dict[str, Callable[[str], str]]:
+                      Callable)\
+                        -> dict[str, Callable]:
     return {'partial_enchantment': partial(base_enchantment, 50, 'Fireball')}
 
 
-# need to understand more how th cache work for this fibo fonction
+# lru_cache stock every return value of memoized_fibonacci
 @lru_cache(maxsize=128, typed=False)
 def memoized_fibonacci(n: int) -> int:
     if n == 0:
@@ -55,14 +55,18 @@ def memoized_fibonacci(n: int) -> int:
         memoized_fibonacci(n - 2) if n > 2 else 1
 
 
-def spell_dispatcher() -> Callable[[Any], str]:
+def spell_dispatcher() -> Callable:
 
     @singledispatch
-    def dispatcher(*args, **kargs) -> str:
+    def dispatcher(*args) -> str:
+        # `singledispatch` calls the registered function below.
+        # If the first argument does not match a registered function,
+        # it returns "Unknown spell type".
         return "Unknow spell type"
 
     @dispatcher.register(int)
     def _(damage_spell: int) -> str:
+
         return f"{damage_spell} damage"
 
     @dispatcher.register(str)
@@ -94,8 +98,8 @@ def spell_reducer_test(spell_powers: list[int]) -> None:
         print(f"expected: {min(spell_powers)}, "
               f"result: {spell_reducer(spell_powers, 'min')}")
 
-        # Call spell reducer whith bad operation.
-        # Must raise an error
+        # Call `spell` reducer with a bad operation.
+        # It must raise an error.
         print("Error expected below!!!")
         spell_reducer(spell_powers, 'bad operation')
 
@@ -106,7 +110,7 @@ def spell_reducer_test(spell_powers: list[int]) -> None:
 
 
 def partial_enchanter_test(target_list: list[str]) -> None:
-    print(f"\n{Color.YELLOW}Testing spell reducer...{Color.RESET}")
+    print(f"\n{Color.YELLOW}Testing partial enchanter...{Color.RESET}")
     try:
         partial: dict[
             str,

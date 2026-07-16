@@ -10,26 +10,24 @@ class Color:
     RESET: str = "\033[0m"
 
 
-
 def spell_timer(func: Callable) -> Callable:
-    
     @wraps(func)
-    def time_mesurment():
-        print(f"Casting {func.__name__}...")
+    def wrapper(*args, **kwargs):
+        """ Doc string for help comprehension of  @wrapper """
         start = time.time()
-        result = func()
+        result = func(*args, **kwargs)
         end = time.time()
         print(f"Spell completed in {round(end - start, 3)}")
         return result
-    return time_mesurment
+    return wrapper
 
 
-# !!! Need to undestand deeper: https://stackoverflow.com/questions/61233508/parameterized-decorators-in-python
+# https://stackoverflow.com/questions/61233508/parameterized-decorators-in-python
 def power_validator(min_power: int) -> Callable:
     def validator(func: Callable):
         @wraps(func)
         # *args is a tuple of all argument passed to the fonction
-        def wrapper(*args):
+        def wrapper(*args, **kwargs):
             if args[2] < min_power:
                 return "Insufficient power for this spell"
             return func(*args)
@@ -37,69 +35,86 @@ def power_validator(min_power: int) -> Callable:
     return validator
 
 
-
 def retry_spell(max_attempts: int) -> Callable:
     def retry(func):
         func.retry = 0
-        @wraps(func)    
+
+        @wraps(func)
         def wrapper(*args, **kwargs):
             try:
-                print(args)
-                func(args[0])
-                print("Waaaaaaagh spelled !")
-            except Exception as e:
+                func(args[0] - 1)
+            except Exception:
                 if func.retry == max_attempts:
-                    print(f"Spell casting failed after {max_attempts} attempts")
+                    print(f"Spell casting failed after "
+                          f"{max_attempts} attempts")
                 else:
-                    print(f"Spell failed, retrying... (attempt {func.retry + 1}/{max_attempts})")
+                    print(f"Spell failed, retrying... (attempt "
+                          f"{func.retry + 1}/{max_attempts})")
                     func.retry += 1
-                    wrapper(args, kwargs)
+                    wrapper(args[0] - 1, **kwargs)
         return wrapper
     return retry
-            
+
 
 class MageGuild:
 
     @staticmethod
     def validate_mage_name(name: str) -> bool:
-        pass
+        if len(name) < 3:
+            return False
+        return name.isalnum()
 
-    @power_validator(20)
+    @power_validator(10)
     def cast_spell(self, spell_name: str, power: int) -> str:
-        return f"{spell_name} as a power {power}"
+        return f"Successfully cast {spell_name} with {power} power"
 
 
-def fireball(ex_simulation_time: int = 3.1568) -> str:
+@spell_timer
+def fireball(ex_simulation_time: int) -> str:
+    """ Doc string for @wrap decorator exemple """
+
     time.sleep(ex_simulation_time)
     return "Fireball cast!"
 
 
-def spell_timer_test():
-    print(f"\n{Color.YELLOW}Testing spell timer...{Color.RESET}")
+def spell_timer_test() -> None:
     try:
         # create a timer wrapper for fireball
-        casting_fireball = spell_timer(fireball)
-        result: str = casting_fireball()
-        print(f"Result: {result}")  
-    except Exception as e:
+        print(f"Casting {fireball.__name__}...")
+        print(f"Result: {fireball(5)}")
+    except (Exception, KeyboardInterrupt) as e:
         print(f"\n{Color.RED}{e.__class__.__name__}: {e}{Color.RESET}")
 
-def power_validator_test(power: int):
+
+def power_validator_test(power: int) -> None:
     mage: MageGuild = MageGuild()
     print(mage.cast_spell("hello", power))
 
-@retry_spell(3)
-def max_retry(mode: int):
-    if mode == 0:
+
+@retry_spell(11)
+def max_retry(nb_of_err_simulation: int) -> None:
+    if nb_of_err_simulation >= 0:
         raise Exception
     else:
-        pass
-        
+        print("Waaaaaaagh spelled !")
+
+
+def retrying_spell_test(nb_of_err_simulation: int) -> None:
+    print(f"\n{Color.YELLOW}Testing retrying spell...{Color.RESET}")
+    max_retry(nb_of_err_simulation)
+
+
+def mage_guild_test() -> None:
+    print(f"\n{Color.YELLOW}Testing MageGuild...{Color.RESET}")
+    mage: MageGuild = MageGuild()
+    print(mage.validate_mage_name("berlimage"))
+    print(mage.validate_mage_name("!hello"))
+    print(mage.cast_spell("Lightning", 15))
+    print(mage.cast_spell("Lightning", 2))
+
 
 if __name__ == "__main__":
+    print(f"\n{Color.YELLOW}Testing spell timer...{Color.RESET}")
     #spell_timer_test()
-    #power_validator_test(21)
-    max_retry(0)
-    #max_retry(1)
-
-    
+    retrying_spell_test(2)
+    mage_guild_test()

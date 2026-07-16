@@ -8,12 +8,11 @@ class Color:
     RESET: str = "\033[0m"
 
 
-# Create a counting closure
-# Callable typing -> Take no argument, return an int
-def mage_counter() -> Callable[[], int]:
+def mage_counter() -> Callable:
     count: int = 0
 
     def counter() -> int:
+        # With `nonlocal`, the scope of `count` is shared by the mage counter.
         nonlocal count
         count += 1
         return count
@@ -21,20 +20,18 @@ def mage_counter() -> Callable[[], int]:
 
 
 # Create power accumulator
-# Callable typing -> Take int argument, return an int
-def spell_accumulator(initial_power: int) -> Callable[[int], int]:
-    counter: int = initial_power
+def spell_accumulator(initial_power: int) -> Callable:
+    acc: int = initial_power
 
-    def acc(add: int) -> int:
-        nonlocal counter
-        counter += add
-        return counter
-    return acc
+    def accumulator(add: int) -> int:
+        nonlocal acc
+        acc += add
+        return acc
+    return accumulator
 
 
 # Create enchantment functions:
-# Callable typing -> Take str argument, return an str
-def enchantment_factory(enchantment_type: str) -> Callable[[str], str]:
+def enchantment_factory(enchantment_type: str) -> Callable:
 
     def enchantment(item_name: str) -> str:
         return f"{enchantment_type} {item_name}"
@@ -42,13 +39,12 @@ def enchantment_factory(enchantment_type: str) -> Callable[[str], str]:
 
 
 # Create a memory management system
-# Callable typing -> Take variadique lis of arguments
-# return Any type
-def memory_vault() -> dict[str, Callable[..., Any]]:
+def memory_vault() -> dict[str, Callable]:
     __vault: dict[Any, Any] = {}
 
     def store(key: Any, value: Any) -> bool:
         nonlocal __vault
+        __vault = __vault
         try:
             __vault[key] = value
         except Exception as e:
@@ -65,11 +61,11 @@ def memory_vault() -> dict[str, Callable[..., Any]]:
     return {'store': store, 'recall': recall}
 
 
-# Fonction call counter
+# Fonction call counter test
 def mage_counter_test() -> None:
     try:
-        counter_a: Callable[[], int] = mage_counter()
-        counter_b: Callable[[], int] = mage_counter()
+        counter_a: Callable = mage_counter()
+        counter_b: Callable = mage_counter()
         print(f"{Color.YELLOW}Testing mage counter...{Color.RESET}")
         print(f"counter_a call 1: {counter_a()}")
         print(f"counter_a call 2: {counter_a()}")
@@ -102,7 +98,7 @@ def enchantment_factory_test(enchantment_types: list[str],
     try:
         for enchantment in enchantment_types:
             for item in items_to_enchant:
-                factory: Callable[[str], str] =\
+                factory: Callable =\
                     enchantment_factory(enchantment)
                 print(factory(item))
             print()

@@ -9,6 +9,14 @@ class Color:
     RESET: str = "\033[0m"
 
 
+# Conditional function for the conditional_caster
+def condition_test(target: str, power: int) -> bool:
+    if target == 'Dragon' and power > 10 or target == 'Wizard' and power > 10:
+        return True
+    else:
+        return False
+
+
 def heal(target: str, power: int) -> str:
     return f"Heal restores {target} for {power} HP"
 
@@ -21,13 +29,17 @@ def strong_attack(target: str, power: int) -> str:
     return f"Strong Fireball hit {target} for {power * 10} HP"
 
 
+# spell1 and spell2 are the two functions that should be combined.
 def spell_combiner(spell1: Callable, spell2: Callable) -> Callable:
+    # target and power are the two arguments of our new combinator function.
     def combiner(target: str, power: int) -> tuple:
         return (spell1(target, power), spell2(target, power))
     return combiner
 
 
+# base_spell is our base function, and multiplier is the multiplier to apply.
 def power_amplifier(base_spell: Callable, multiplier: int) -> Callable:
+    # `target` and `power` are the two arguments of our new function.
     def amplifier(target: str, power: int) -> Callable:
         if multiplier > 0:
             return base_spell(target, power * multiplier)
@@ -36,6 +48,7 @@ def power_amplifier(base_spell: Callable, multiplier: int) -> Callable:
     return amplifier
 
 
+# `condition` is the function used to determine if `spell` should be called.
 def conditional_caster(condition: Callable, spell: Callable) -> Callable:
     def caster(target: str, power: int):
         if condition(target, power):
@@ -45,17 +58,12 @@ def conditional_caster(condition: Callable, spell: Callable) -> Callable:
     return caster
 
 
+# `spells` is a list of functions that will be called sequentially
+# by the `sequence` function with the `target` and `power` arguments
 def spell_sequence(spells: list[Callable]) -> Callable:
     def sequence(target: str, power: int) -> list[str]:
         return [spell(target, power) for spell in spells]
     return sequence
-
-
-def condition_test(target: str, power: int) -> bool:
-    if target == 'Dragon' and power > 10 or target == 'Wizard' and power > 10:
-        return True
-    else:
-        return False
 
 
 def spells_combinaison_test(target_power: dict[str, int],

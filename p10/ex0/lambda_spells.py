@@ -1,8 +1,24 @@
+class Color:
+    RED: str = "\033[91m"
+    GREEN: str = "\033[92m"
+    YELLOW: str = "\033[93m"
+    RESET: str = "\033[0m"
+
+# A lambda function is an anonymous inline function.
+# Use a lambda for simple inline logic.
+# Use a regular function for more complex logic.
+# Lambda syntax: lambda arguments: expression
+
+
 def artifact_sorter(artifacts: list[dict]) -> list[dict]:
     return sorted(artifacts, key=lambda x: x['power'], reverse=True)
 
 
 def power_filter(mages: list[dict], min_power: int) -> list[dict]:
+    # Example: `mages` is a list of dictionaries.
+    # `x` represents each dictionary.
+    # `x['power']` retrieves the value associated with the `'power'` key
+    # and compares it to `min_power`.
     return (list(filter(lambda x: x['power'] >= min_power, mages)))
 
 
@@ -12,14 +28,19 @@ def spell_transformer(spells: list[str]) -> list[str]:
 
 def mage_stats(mages: list[dict]) -> dict:
     return {
-        'max_power': max(mages, key=lambda x: x['power'])['power'],
-        'min_power': min(mages, key=lambda x: x['power'])['power'],
+
+        # Here, `max(mages, key=lambda x: x['power'])` returns the dictionary
+        # with the highest value for the `'power'` key.
+
+        'max_power': int(max(mages, key=lambda x: x['power'])['power']),
+        'min_power': int(min(mages, key=lambda x: x['power'])['power']),
         'avg_power': round(sum(map(
             lambda x: x['power'], mages)) / len(mages), 2)
     }
 
 
 def test_artifact_sorter(artifacts: list[dict]) -> None:
+    print(f"\n{Color.YELLOW}Testing artifact sorter...{Color.RESET}")
     try:
         sorted_artifacts: list[dict] = artifact_sorter(artifacts)
         print("Artifact sorted by 'power' level (descending):")
@@ -33,7 +54,7 @@ def test_artifact_sorter(artifacts: list[dict]) -> None:
 
 
 def test_power_filter(mages: list[dict], min_power: int) -> None:
-
+    print(f"\n{Color.YELLOW}Testing power filter...{Color.RESET}")
     try:
         filtered_mages: list[dict] = power_filter(mages, min_power)
         print(f"Mages with power >= {min_power}:")
@@ -47,9 +68,9 @@ def test_power_filter(mages: list[dict], min_power: int) -> None:
 
 
 def test_spell_transformer(spells: list[str]) -> None:
+    print(f"\n{Color.YELLOW}Testing spell transformer...{Color.RESET}")
     try:
         spell_transformed: list[str] = spell_transformer(spells)
-        print("add '* ' prefix and ' *' suffix on spell:")
         for x, spell in enumerate(spell_transformed):
             print(f"Transformation number: {x + 1}: "
                   f"from {spells[x]} to {spell}")
@@ -58,9 +79,9 @@ def test_spell_transformer(spells: list[str]) -> None:
 
 
 def test_mage_stats(mages: list[dict]) -> None:
+    print(f"\n{Color.YELLOW}Testing mages stats display...{Color.RESET}")
     try:
         stats: dict = mage_stats(mages)
-        print("\nMages stats:")
         print(f"Most powerful mage: {stats['max_power']}")
         print(f"Least powerful mage: {stats['min_power']}")
         print(f"Avg power : {stats['avg_power']}")
@@ -119,8 +140,15 @@ if __name__ == "__main__":
         }
     ]
     spells = ['tsunami', 'shield', 'fireball', 'lightning']
-
-    test_artifact_sorter(artifacts)
-    test_power_filter(mages, 74)
-    test_spell_transformer(spells)
-    test_mage_stats(mages)
+    try:
+        # `test_artifact_sorter` takes a list of artifacts.
+        test_artifact_sorter(artifacts)
+        # `test_power_filter` takes a list of mages
+# and a minimum power value.
+        test_power_filter(mages, 74)
+        # test_spell_transformer take list of spell
+        test_spell_transformer(spells)
+        # test_mage_stats take list of mage
+        test_mage_stats(mages)
+    except Exception as e:
+        print(f"{e.__class__.__name__}: {e}")
